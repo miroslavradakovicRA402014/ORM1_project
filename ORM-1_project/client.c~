@@ -1,0 +1,65 @@
+#include "clientdefines.h"
+
+static int sock;
+static struct sockaddr_in server;
+static E_MAIL eMail;
+
+void CreateSocket()
+{
+    sock = socket(AF_INET,SOCK_STREAM,0);
+    if (sock == -1)
+    {
+        printf("Could not create socket");
+    }
+    puts("Socket created");
+
+    server.sin_addr.s_addr = inet_addr("127.0.0.1");
+    server.sin_family = AF_INET;
+    server.sin_port = htons(PORT_NUM); //ovo izmeni
+}
+
+void ConnectToSMTP()
+{
+    if (connect(sock,(struct sockaddr *)&server,sizeof(server)) < 0)
+    {
+        perror("Connection to SMTP server failed. Error\n");
+        return;
+    }
+    puts("Connected to SMTP server\n");
+}
+
+void SendSMTPMessage()
+{
+    if(send(sock,(E_MAIL*)&eMail,sizeof(E_MAIL),0) < 0)
+    {
+        puts("E-mail send failed");
+        return;
+    }
+}
+
+void CloseSocket()
+{
+    if (close(sock) < 0) 
+    {
+        perror("Could not close socket\n");
+        return;
+    }
+    puts("Socket closed\n");
+}
+
+int main(int argc , char *argv[])
+{   
+    strcpy(eMail.emailAddress,"miroslav.radakovic23@gmail.com");
+    strcpy(eMail.emailAddressReciver,"kimids95@gmail.com");
+    strcpy(eMail.emailData,"Mail from client.");
+    //create socket
+    CreateSocket();
+    //connect to server
+    ConnectToSMTP();
+    //send mail
+    SendSMTPMessage();
+    //close socket
+    CloseSocket();
+
+    return 0;
+}

@@ -1,0 +1,34 @@
+IDIR =../include
+
+CC=gcc
+CXX = gcc
+LD = gcc
+
+INC = -I inc
+LIBDIR =
+LIBS = -lpthread -lm
+LDFLAGS = -static
+CFLAGS=-ggdb -I$(IDIR) -Wall
+
+ODIR=obj
+LDIR =../lib
+
+#LIBS=-lm
+
+_DEPS = 
+DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
+
+_OBJ = SMTPserver.o
+OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
+
+
+$(ODIR)/%.o: %.c $(DEPS)
+	$(CC) -c -o $@ $< $(CFLAGS)
+
+SMTPserver: $(OBJ)
+	gcc -o $@ $^ $(CFLAGS) $(LIBS)
+
+.PHONY: clean
+
+clean:
+	rm -f SMTPserver $(ODIR)/*.o *~ core $(INCDIR)/*~ 
